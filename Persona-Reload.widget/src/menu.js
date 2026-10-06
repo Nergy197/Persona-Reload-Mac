@@ -69,6 +69,9 @@ function launch(i){select(i);if(!native){notify('Xem thử '+apps[i].label+' —
 }
 // Served by Übersicht's local server (not file://) means /run/ is available.
 if(location.protocol.startsWith('http')){native=true;document.getElementById('mode').textContent='DESKTOP / READY'}
+// Übersicht only makes its window clickable after the parent page sees a mousemove over a widget
+// ("widgetEnter"). Moves inside this iframe never reach the parent, so forward them to the iframe element.
+window.addEventListener('mousemove',()=>{try{window.frameElement?.dispatchEvent(new MouseEvent('mousemove',{bubbles:true}))}catch(e){}});
 window.addEventListener('pointerup',()=>{const i=pressed;pressed=-1;if(i>=0)launch(i)});
 document.addEventListener('keydown',e=>{if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();const next=(selected+(e.key==='ArrowDown'?1:-1)+apps.length)%apps.length;select(next);rows[next].hit.focus({preventScroll:true})}else if(e.key==='Enter'){e.preventDefault();launch(selected)}else if(e.key==='Escape'){toast.classList.remove('visible');document.activeElement?.blur()}else if(e.key.toLowerCase()==='f'&&!e.metaKey&&!e.ctrlKey){fontInput.click()}});
 // Optional font supplied locally by the user; never uploads the font.
